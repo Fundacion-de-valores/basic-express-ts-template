@@ -1,7 +1,33 @@
 import pool from "../config/db.js";
 
-export const getAllProducts = async () => {
-  const result = await pool.query("SELECT * FROM products");
+export const getAllProducts = async (
+  maxPrice?: number,
+  page = 1,
+  limit = 10
+) => {
+  const offset = (page - 1) * limit;
+
+  if (maxPrice !== undefined) {
+    const result = await pool.query(
+      `SELECT *
+       FROM products
+       WHERE price <= $1
+       ORDER BY name
+       LIMIT $2 OFFSET $3`,
+      [maxPrice, limit, offset]
+    );
+
+    return result.rows;
+  }
+
+  const result = await pool.query(
+    `SELECT *
+     FROM products
+     ORDER BY name
+     LIMIT $1 OFFSET $2`,
+    [limit, offset]
+  );
+
   return result.rows;
 };
 
