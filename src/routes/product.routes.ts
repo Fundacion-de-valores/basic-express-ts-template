@@ -1,3 +1,4 @@
+import { validateProduct } from "../middlewares/validate-product.js";
 import { Router } from "express";
 import {
   getMenu,
@@ -12,7 +13,7 @@ router.get("/menu", getMenu);
 
 router.get("/menu/:id", getProduct);
 
-router.post("/menu", createProduct);
+router.post("/menu", validateProduct, createProduct);
 
 router.put("/menu/:id", updateProductController);
 
