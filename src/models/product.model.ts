@@ -1,10 +1,17 @@
 import pool from "../config/db.js";
 
 // GET - Obtener todos los productos
-export async function getAllProducts() {
-  const result = await pool.query(
-    "SELECT * FROM products ORDER BY id"
-  );
+export async function getAllProducts(maxPrice?: number, page = 1, limit = 10) {
+  const values: number[] = [];
+  let query = "SELECT * FROM products";
+  if (maxPrice !== undefined) {
+    values.push(maxPrice);
+    query += " WHERE precio <= $1";
+  }
+  values.push(limit, (page - 1) * limit);
+  // Solo los números de los marcadores se construyen aquí; los datos van en values.
+  query += ` ORDER BY id LIMIT $${values.length - 1} OFFSET $${values.length}`;
+  const result = await pool.query(query, values);
 
   return result.rows;
 }

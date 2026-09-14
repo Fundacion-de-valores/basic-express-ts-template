@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { z } from "zod";
 
 import {
   getAllProducts,
@@ -7,15 +8,30 @@ import {
   updateProduct,
 } from "../models/product.model.js";
 
+const menuQuerySchema = z.object({
+  maxPrice: z.string().trim().min(1).transform(Number).pipe(z.number().nonnegative()).optional(),
+  page: z.string().trim().regex(/^\d+$/).transform(Number).pipe(z.number().int().min(1).max(2147483647)).default(1),
+  limit: z.string().trim().regex(/^\d+$/).transform(Number).pipe(z.number().int().min(1).max(100)).default(10),
+}).strict();
+
 // GET /api/menu
 export async function getMenu(req: Request, res: Response) {
   /*
     #swagger.tags = ['Products']
-    #swagger.summary = 'Obtener todos los productos'
+    #swagger.summary = 'Obtener productos con filtro y paginación'
+    #swagger.parameters['maxPrice'] = { in: 'query', type: 'number', minimum: 0, description: 'Precio máximo opcional' }
+    #swagger.parameters['page'] = { in: 'query', type: 'integer', minimum: 1, default: 1 }
+    #swagger.parameters['limit'] = { in: 'query', type: 'integer', minimum: 1, maximum: 100, default: 10 }
+    #swagger.responses[400] = { description: 'Parámetros de consulta inválidos' }
   */
 
   try {
-    const products = await getAllProducts();
+    const result = menuQuerySchema.safeParse(req.query);
+    if (!result.success) {
+      return res.status(400).json({ message: "Parámetros de consulta inválidos", errors: result.error.issues });
+    }
+    const { maxPrice, page, limit } = result.data;
+    const products = await getAllProducts(maxPrice, page, limit);
 
     return res.status(200).json(products);
   } catch (error) {
