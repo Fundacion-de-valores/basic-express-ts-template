@@ -6,7 +6,7 @@ const doc = {
         description: 'Documentación automática generada para el bootcamp',
         version: '1.0.0',
     },
-    host: 'localhost:3000',
+    host: '', // Swagger usa el host y puerto de la página actual.
     schemes: ['http'],
 };
 
