@@ -2,7 +2,9 @@ import express, { type Request, type Response } from "express";
 import swaggerRouter from "./routes/swagger.router.js";
 import cors from "cors";
 import productRouter from "./routes/product.routes.js"; //importamos las rutas de los productos
+import customerRouter from "./routes/customer.routes.js";
 import saleRouter from "./routes/sale.routes.js";
+ 
 
 const port = process.env.PORT; 
 
@@ -14,6 +16,7 @@ app.use(cors())
 
 app.use("/api/docs", swaggerRouter);
 app.use("/api", productRouter); 
+app.use("/api", customerRouter);
 app.use("/api", saleRouter);
 
 //endpoint de prueba
