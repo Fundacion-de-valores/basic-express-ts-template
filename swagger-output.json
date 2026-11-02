@@ -13,13 +13,23 @@
   "paths": {
     "/": {
       "get": {
-        "tags": [
-          "Tests"
-        ],
         "description": "",
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/menu": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
